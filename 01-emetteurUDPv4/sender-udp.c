@@ -14,16 +14,39 @@
 int main (int argc, char *argv [])
 {
     /* test arg number */
+   if( argc != 2){
+        fprintf(stderr, "Erreur us : %s <port number> \n",argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     /* convert and check port number */
+    int port_number = atoi(argv[1]);
+    if(port_number<10000 || port_number > 65000){
+        fprintf(stderr,"Mauvais format de numero de port : intervalle [10 000:65 000]\n");
+        exit(EXIT_FAILURE);
+    }
 
     /* create socket */
+    int socket_fd;
+    char* msg = "Hello World";
+    socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
+    CHECK(socket_fd);
 
     /* complete sockaddr struct */
+    struct sockaddr_storage ss;
+    struct sockaddr_in *in = (struct sockaddr_in *) &ss;
+
+    memset(&in, 0, sizeof(*in));
+    in -> sin_family = AF_INET;
+    in-> sin_port =PORT(port_number);
+    in -> sin_addr.s_addr  = IP; 
+
 
     /* send message to remote peer */
 
-    /* close socket */
+    CHECK(sendto(socket_fd,msg,strlen(msg),0,(struct sockaddr *)&in,sizeof(in)));
 
+    /* close socket */
+    CHECK(close(socket_fd));
     return 0;
 }
