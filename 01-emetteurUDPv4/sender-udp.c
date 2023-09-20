@@ -28,7 +28,7 @@ int main (int argc, char *argv [])
 
     /* create socket */
     int socket_fd;
-    char* msg = "Hello World";
+    char* msg = "hello world";
     socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
     CHECK(socket_fd);
 
@@ -36,17 +36,17 @@ int main (int argc, char *argv [])
     struct sockaddr_storage ss;
     struct sockaddr_in *in = (struct sockaddr_in *) &ss;
 
-    memset(&in, 0, sizeof(*in));
+
     in -> sin_family = AF_INET;
     in-> sin_port =PORT(port_number);
     in -> sin_addr.s_addr  = IP; 
 
 
     /* send message to remote peer */
-
-    CHECK(sendto(socket_fd,msg,strlen(msg),0,(struct sockaddr *)&in,sizeof(in)));
+    CHECK(sendto(socket_fd,msg,strlen(msg),0,(struct sockaddr *)in,sizeof (struct sockaddr_in)));
 
     /* close socket */
     CHECK(close(socket_fd));
+
     return 0;
 }
