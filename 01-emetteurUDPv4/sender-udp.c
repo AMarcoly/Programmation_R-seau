@@ -43,7 +43,9 @@ int main (int argc, char *argv [])
 
 
     /* send message to remote peer */
-    CHECK(sendto(socket_fd,msg,strlen(msg),0,(struct sockaddr *)in,sizeof (*in)));
+    //CHECK(sendto(socket_fd,msg,strlen(msg),0,(struct sockaddr *)in,sizeof (*in)));
+
+    CHECK(sendto(socket_fd,msg,strlen(msg),0,(struct sockaddr *)in,sizeof (struct sockaddr_in)));
 
     /* close socket */
     CHECK(close(socket_fd));
