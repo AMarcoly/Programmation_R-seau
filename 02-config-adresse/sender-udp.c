@@ -49,7 +49,7 @@ int main (int argc, char *argv [])
     
     
     CHECK(sendto(fd_socket,message,strlen(message),0,res->ai_addr,res->ai_addrlen));
-    
+    printf("ok");
 
 
     CHECK(close(fd_socket));
