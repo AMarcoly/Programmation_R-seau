@@ -35,6 +35,7 @@ int main (int argc, char *argv [])
     CHECK(fd_socket);
 
     struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
     struct addrinfo *res = NULL;
 
     hints.ai_family = AF_INET; // IPV4
@@ -46,15 +47,12 @@ int main (int argc, char *argv [])
     if(res==NULL){
         exit(EXIT_FAILURE);
     }
-    
-    
-    CHECK(sendto(fd_socket,message,strlen(message),0,res->ai_addr,res->ai_addrlen));
-    printf("ok");
-
+    else{
+        CHECK(sendto(fd_socket,message,strlen(message),0,res->ai_addr,res->ai_addrlen));
+        freeaddrinfo (res);    
+    }
 
     CHECK(close(fd_socket));
-   
-    freeaddrinfo (res);
 
     return 0;
 }
