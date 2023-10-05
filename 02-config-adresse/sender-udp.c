@@ -14,13 +14,13 @@
 int main (int argc, char *argv [])
 {
     //* test arg number */
-   if( argc != 3){
+   if( argc != 2){
         fprintf(stderr, "Erreur us : %s <port number>\n",argv[0]);
         exit(EXIT_FAILURE);
     }
 
     /* convert and check port number */
-    char * str_port = argv[2];
+    char * str_port = argv[1];
     const char * message = "hello world";
 
     int port_number = atoi(str_port);
@@ -46,8 +46,11 @@ int main (int argc, char *argv [])
     if(res==NULL){
         exit(EXIT_FAILURE);
     }
-
+    
+    
     CHECK(sendto(fd_socket,message,strlen(message),0,res->ai_addr,res->ai_addrlen));
+    
+
 
     CHECK(close(fd_socket));
    

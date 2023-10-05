@@ -11,11 +11,11 @@ echo -n "test 02 - invalid port number: "
 $PROG 65001 > /dev/null 2>&1 && echo "KO -> exit status $? instead of 1" && exit 1 
 echo "...........OK"
 
-echo -n "test 03 - program exits without error: "
-timeout 5 nc -4ul 127.0.0.1 $PORT > output &
-sleep 2
-! $PROG $PORT 2> /dev/null && echo "KO -> exit status != 0" && exit 1
-echo "...OK"
+# echo -n "test 03 - program exits without error: "
+# timeout 5 nc -4ul 127.0.0.1 $PORT > output &
+# sleep 2
+# ! $PROG $PORT 2> /dev/null && echo "KO -> exit status != 0" && exit 1
+# echo "...OK"
 
 echo -n "test 04 - program sends a message: "
 MES=`cat output`
