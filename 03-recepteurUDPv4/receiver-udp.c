@@ -61,15 +61,5 @@ int main (int argc, char *argv [])
 
     CHECK(close(fd_socket));
 
-    /* link socket to local IP and PORT */
-
-    /* wait for incoming message */
-
-    /* close socket */
-
-    /* free memory */
-
-    /* print received message */
-
     return 0;
 }
