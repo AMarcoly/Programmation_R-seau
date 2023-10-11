@@ -76,11 +76,3 @@ int main (int argc, char *argv [1])
 
     return 0;
 }
-
-  /* create socket */
-    /* complete struct sockaddr */
-    /* link socket to local IP and PORT */
-    /* wait for incoming message */
-    /* print sender addr and port */
-    /* close socket */
-    /* free memory */
