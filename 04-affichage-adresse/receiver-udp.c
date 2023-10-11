@@ -15,23 +15,72 @@
 
 int main (int argc, char *argv [1])
 {
-    /* test arg number */
+    // test nombres args et intervalles
+    if( argc != 2){
+        fprintf(stderr, "Erreur us : %s <port number>\n",argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     /* convert and check port number */
+    char * str_port = argv[1];
+    char response[SIZE];
+    char host[NI_MAXHOST];
+    char serv[NI_MAXSERV];
+    
 
-    /* create socket */
+    int port_number = atoi(str_port);
+    if(port_number<10000 || port_number > 65000){
+        fprintf(stderr,"Mauvais format de numero de port : intervalle [10 000:65 000]\n");
+        exit(EXIT_FAILURE);
+    }
 
-    /* complete struct sockaddr */
+    // creation de socket
+    int fd_socket;
+    fd_socket=socket(AF_INET, SOCK_DGRAM, 0);
+    CHECK(fd_socket);
 
-    /* link socket to local IP and PORT */
+    // declara structure sockadd caste pour etre passé en dernier arguments 
+    struct sockaddr_storage ss;
+    struct sockaddr *src_addr = (struct sockaddr *) &ss;
+    socklen_t lenaddr = sizeof(*src_addr);
 
-    /* wait for incoming message */
 
-    /* print sender addr and port */
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    struct addrinfo *res = NULL;
 
-    /* close socket */
+    hints.ai_family = AF_INET; // IPV4
+    hints.ai_socktype = SOCK_DGRAM; // UDP
 
-    /* free memory */
+   
+
+    int fd_addr = getaddrinfo (IP, str_port, &hints, &res);
+    CHECK(fd_addr);
+
+    if(res==NULL){
+        exit(EXIT_FAILURE);
+    }
+    else{
+        CHECK(bind (fd_socket, res->ai_addr, res->ai_addrlen));
+
+        CHECK(recvfrom(fd_socket, response, sizeof(response), 0, (struct sockaddr *)src_addr,&lenaddr));
+        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, 0));
+
+        freeaddrinfo (res); 
+        printf("%s\n %s %s",response,host,serv);
+
+
+    }
+
+    CHECK(close(fd_socket));
 
     return 0;
 }
+
+  /* create socket */
+    /* complete struct sockaddr */
+    /* link socket to local IP and PORT */
+    /* wait for incoming message */
+    /* print sender addr and port */
+    /* close socket */
+    /* free memory */
