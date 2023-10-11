@@ -64,11 +64,11 @@ int main (int argc, char *argv [1])
         CHECK(bind (fd_socket, res->ai_addr, res->ai_addrlen));
 
         CHECK(recvfrom(fd_socket, response, sizeof(response), 0, (struct sockaddr *)src_addr,&lenaddr));
-        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, 0));
+        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
 
         freeaddrinfo (res); 
-        printf("%s\n %s %s",response,host,serv);
-
+        printf("%s",response);
+        printf("%s %s\n",host,serv);
 
     }
 
