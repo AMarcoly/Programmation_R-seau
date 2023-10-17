@@ -13,11 +13,11 @@
 #define IP   "127.0.0.1"
 #define SIZE 100
 
-int main (int argc, char *argv [1])
+int main (int argc, char *argv [])
 {
     // test nombres args et intervalles
-    if( argc != 2){
-        fprintf(stderr, "Erreur us : %s <port number>\n",argv[0]);
+    if( argc != 3){
+        fprintf(stderr, "usage: %s ip_addr port_number",argv[0]);
         exit(EXIT_FAILURE);
     }
 
