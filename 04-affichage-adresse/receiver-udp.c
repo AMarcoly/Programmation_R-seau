@@ -17,7 +17,7 @@ int main (int argc, char *argv [])
 {
     // test nombres args et intervalles
     if( argc != 3){
-        fprintf(stderr, "usage: %s ip_addr port_number",argv[0]);
+        fprintf(stderr, "usage: %s ip_addr port_number\n",argv[0]);
         exit(EXIT_FAILURE);
     }
 
@@ -55,7 +55,11 @@ int main (int argc, char *argv [])
    
 
     int fd_addr = getaddrinfo (IP, str_port, &hints, &res);
-    CHECK(fd_addr);
+    if(fd_addr != 0)
+    {
+        fprintf(stderr,"usage: %s\n",gai_strerror(fd_addr));
+        exit(EXIT_FAILURE);
+    }
 
     if(res==NULL){
         exit(EXIT_FAILURE);
