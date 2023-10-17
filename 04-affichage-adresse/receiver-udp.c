@@ -22,7 +22,7 @@ int main (int argc, char *argv [])
     }
 
     /* convert and check port number */
-    char * str_port = argv[1];
+    char * str_port = argv[2];
     char response[SIZE];
     char host[NI_MAXHOST];
     char serv[NI_MAXSERV];
@@ -54,12 +54,12 @@ int main (int argc, char *argv [])
 
    
 
-    int fd_addr = getaddrinfo (IP, str_port, &hints, &res);
-    if(fd_addr != 0)
-    {
-        fprintf(stderr,"usage: %s\n",gai_strerror(fd_addr));
+    int fd_addr = getaddrinfo (argv[1], str_port, &hints, &res);
+    if (fd_addr != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(fd_addr));
         exit(EXIT_FAILURE);
     }
+
 
     if(res==NULL){
         exit(EXIT_FAILURE);
