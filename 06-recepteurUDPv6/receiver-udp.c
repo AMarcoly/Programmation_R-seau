@@ -5,12 +5,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
- #include <netdb.h>
+#include <netdb.h>
 
 #define CHECK(op)   do { if ( (op) == -1) { perror (#op); exit (EXIT_FAILURE); } \
                     } while (0)
 
-#define IP   "127.0.0.1"
+#define IP   "::1"
 #define SIZE 100
 
 int main (int argc, char *argv [])
@@ -24,8 +24,8 @@ int main (int argc, char *argv [])
     /* convert and check port number */
     char * str_port = argv[2];
     char response[SIZE];
-    char host[NI_MAXHOST];
-    char serv[NI_MAXSERV];
+    char host[SIZE];
+    char serv[SIZE];
     
 
     int port_number = atoi(str_port);
@@ -68,7 +68,7 @@ int main (int argc, char *argv [])
         CHECK(bind (fd_socket, res->ai_addr, res->ai_addrlen));
 
         CHECK(recvfrom(fd_socket, response, sizeof(response), 0, (struct sockaddr *)src_addr,&lenaddr));
-        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
+        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, SIZE, serv, SIZE, NI_DGRAM|NI_NUMERICHOST));
 
         freeaddrinfo (res); 
         printf("%s",response);
