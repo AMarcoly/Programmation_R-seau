@@ -5,12 +5,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <netdb.h>
+ #include <netdb.h>
 
 #define CHECK(op)   do { if ( (op) == -1) { perror (#op); exit (EXIT_FAILURE); } \
                     } while (0)
 
-#define IP   "::1"
+#define IP   "127.0.0.1"
 #define SIZE 100
 
 int main (int argc, char *argv [])
@@ -24,8 +24,8 @@ int main (int argc, char *argv [])
     /* convert and check port number */
     char * str_port = argv[2];
     char response[SIZE];
-    char host[SIZE];
-    char serv[SIZE];
+    char host[NI_MAXHOST];
+    char serv[NI_MAXSERV];
     
 
     int port_number = atoi(str_port);
@@ -36,7 +36,7 @@ int main (int argc, char *argv [])
 
     // creation de socket
     int fd_socket;
-    fd_socket=socket(AF_INET6, SOCK_DGRAM, 0);
+    fd_socket=socket(AF_INET, SOCK_DGRAM, 0);
     CHECK(fd_socket);
 
     // declara structure sockadd caste pour etre passé en dernier arguments 
@@ -49,7 +49,7 @@ int main (int argc, char *argv [])
     memset(&hints, 0, sizeof(hints));
     struct addrinfo *res = NULL;
 
-    hints.ai_family = AF_INET6; // IPV6
+    hints.ai_family = AF_INET; // IPV4
     hints.ai_socktype = SOCK_DGRAM; // UDP
 
    
@@ -68,7 +68,7 @@ int main (int argc, char *argv [])
         CHECK(bind (fd_socket, res->ai_addr, res->ai_addrlen));
 
         CHECK(recvfrom(fd_socket, response, sizeof(response), 0, (struct sockaddr *)src_addr,&lenaddr));
-        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, SIZE, serv, SIZE, NI_DGRAM|NI_NUMERICHOST));
+        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
 
         freeaddrinfo (res); 
         printf("%s",response);

@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/ssdark/Desktop/ANTOINE",
-      "program": "/home/ssdark/Desktop/ANTOINE/build/Debug/outDebug",
+      "cwd": "/adhome/m/ma/marcoly.antoine/Bureau/ANTOINE",
+      "program": "/adhome/m/ma/marcoly.antoine/Bureau/ANTOINE/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
