@@ -14,13 +14,13 @@
 int main (int argc, char *argv [])
 {
      //* test arg number */
-   if( argc != 2){
-        fprintf(stderr, "Erreur us : %s <port number>\n",argv[0]);
+    if( argc != 3){
+        fprintf(stderr, "usage: %s ip_addr port_number\n",argv[0]);
         exit(EXIT_FAILURE);
     }
 
     /* convert and check port number */
-    char * str_port = argv[1];
+    char * str_port = argv[2];
     const char * message = "hello world";
 
     int port_number = atoi(str_port);
@@ -41,8 +41,11 @@ int main (int argc, char *argv [])
     hints.ai_family = AF_INET6; // IPV6
     hints.ai_socktype = SOCK_DGRAM; // UDP
 
-    int fd_addr = getaddrinfo (IP, str_port, &hints, &res);
-    CHECK(fd_addr);
+    int fd_addr = getaddrinfo (argv[1], str_port, &hints, &res);
+    if (fd_addr != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(fd_addr));
+        exit(EXIT_FAILURE);
+    }
 
     if(res==NULL){
         exit(EXIT_FAILURE);
