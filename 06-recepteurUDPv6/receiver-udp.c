@@ -5,12 +5,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
- #include <netdb.h>
+#include <netdb.h>
 
 #define CHECK(op)   do { if ( (op) == -1) { perror (#op); exit (EXIT_FAILURE); } \
                     } while (0)
 
-#define IP   "127.0.0.1"
+#define IP   "::1"
 #define SIZE 100
 
 int main (int argc, char *argv [])
@@ -21,12 +21,7 @@ int main (int argc, char *argv [])
         exit(EXIT_FAILURE);
     }
 
-    /* convert and check port number */
     char * str_port = argv[2];
-    char response[SIZE];
-    char host[NI_MAXHOST];
-    char serv[NI_MAXSERV];
-    
 
     int port_number = atoi(str_port);
     if(port_number<10000 || port_number > 65000){
@@ -36,25 +31,15 @@ int main (int argc, char *argv [])
 
     // creation de socket
     int fd_socket;
-    fd_socket=socket(AF_INET, SOCK_DGRAM, 0);
+    fd_socket=socket(PF_INET6, SOCK_DGRAM, 0);
     CHECK(fd_socket);
 
-    // declara structure sockadd caste pour etre passé en dernier arguments 
-    struct sockaddr_storage ss;
-    struct sockaddr *src_addr = (struct sockaddr *) &ss;
-    socklen_t lenaddr = sizeof(*src_addr);
 
-
-    struct addrinfo hints;
-    memset(&hints, 0, sizeof(hints));
     struct addrinfo *res = NULL;
-
-    hints.ai_family = AF_INET; // IPV4
-    hints.ai_socktype = SOCK_DGRAM; // UDP
 
    
 
-    int fd_addr = getaddrinfo (argv[1], str_port, &hints, &res);
+    int fd_addr = getaddrinfo (argv[1], argv[2], NULL, &res);
     if (fd_addr != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(fd_addr));
         exit(EXIT_FAILURE);
@@ -67,12 +52,24 @@ int main (int argc, char *argv [])
     else{
         CHECK(bind (fd_socket, res->ai_addr, res->ai_addrlen));
 
-        CHECK(recvfrom(fd_socket, response, sizeof(response), 0, (struct sockaddr *)src_addr,&lenaddr));
-        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
+        char response[SIZE];
+        memset(response,0,SIZE);
+        char host[NI_MAXHOST];
+        char serv[NI_MAXSERV];
 
-        freeaddrinfo (res); 
+        
+        struct sockaddr_storage * src_addr = malloc(sizeof *src_addr);
+        socklen_t lenaddr = sizeof *src_addr;
+        int sizemsg=recvfrom(fd_socket, response, SIZE, 0, (struct sockaddr *)src_addr,&lenaddr);
+        CHECK(sizemsg);
+        CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
+
+        response[sizemsg]='\0';
         printf("%s",response);
         printf("%s %s\n",host,serv);
+
+        freeaddrinfo (res); 
+        free(src_addr);
 
     }
 
