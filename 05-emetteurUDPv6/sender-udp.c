@@ -29,7 +29,6 @@ int main (int argc, char *argv [])
         exit(EXIT_FAILURE);
     }
 
-
     int fd_socket;
     fd_socket=socket(AF_INET6, SOCK_DGRAM, 0);
     CHECK(fd_socket);
@@ -58,3 +57,4 @@ int main (int argc, char *argv [])
     CHECK(close(fd_socket));
     return 0;
 }
+//test
