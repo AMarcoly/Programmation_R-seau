@@ -63,21 +63,19 @@ int main (int argc, char *argv [])
     if(res==NULL){
         exit(EXIT_FAILURE);
     }
-        CHECK(bind (sockfd, res->ai_addr, res->ai_addrlen));
-        CHECK(listen(sockfd, QUEUE_LENGTH)); // Ici taille de la socket est 1 car on suppose un seul client
-        int socketr=accept(sockfd, res->ai_addr, &res->ai_addrlen);
-        CHECK(socketr);
+    CHECK(bind (sockfd, res->ai_addr, res->ai_addrlen));
+    CHECK(listen(sockfd, QUEUE_LENGTH)); // Ici taille de la socket est 1 car on suppose un seul client
+    int socketr=accept(sockfd, res->ai_addr, &res->ai_addrlen);
+    CHECK(socketr);
 
-        
-        CHECK(getnameinfo ((struct sockaddr *)src_addr,lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
-        CHECK(recv(socketr, response, SIZE, 0));
-
-        freeaddrinfo (res); 
-        printf("%s %s\n",host,serv);
-        printf("%s",response);
-        
-
+    CHECK(recv(socketr, response, SIZE, 0));
+    CHECK(getnameinfo ((struct sockaddr *)src_addr,lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
     
+    printf("%s %s\n",host,serv);
+    printf("%s",response);
+    
+
+    freeaddrinfo (res); 
 
     CHECK(close(sockfd));
 
