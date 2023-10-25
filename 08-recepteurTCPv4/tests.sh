@@ -60,6 +60,7 @@ echo -n "test 04 - getaddrinfo usage: "
 ERROR="Name or service not known"
 if [ "$SE" == "Darwin" ]; then
     ERROR="nodename nor servname provided, or not known"
+    echo $OUT
 fi
 
 LC_ALL=C $PROG a $PORT > $OUT/stdout 2> $OUT/stderr && echo "KO -> exit status $? instead of 1"                              && exit 1
