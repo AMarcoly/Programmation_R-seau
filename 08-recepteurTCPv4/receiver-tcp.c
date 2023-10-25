@@ -69,10 +69,11 @@ int main (int argc, char *argv [])
     CHECK(socketr);
 
     CHECK(getnameinfo ((struct sockaddr *)src_addr,lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
-    CHECK(recv(socketr, response, SIZE, 0));
+    CHECK(int nbrc=recv(socketr, response, SIZE, 0));
     
     freeaddrinfo (res); 
     printf("%s %s\n",host,serv);
+    response[nbrc]='\0';
     printf("%s",response);
     
     
