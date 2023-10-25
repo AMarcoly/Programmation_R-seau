@@ -41,6 +41,7 @@ int main (int argc, char *argv [])
 
     hints.ai_family = AF_INET; // IPV4
     hints.ai_socktype = SOCK_STREAM; //TCP
+    hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV; 
 
     int fd_addr = getaddrinfo (argv[1], str_port, &hints, &res);
     if (fd_addr != 0) {
@@ -62,3 +63,4 @@ int main (int argc, char *argv [])
     CHECK(close(fd_socket));
     return 0;
 }
+// fin exo 07
