@@ -71,33 +71,11 @@ int main (int argc, char *argv [])
     CHECK(getnameinfo ((struct sockaddr *)src_addr,lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
     CHECK(recv(socketr, response, SIZE, 0));
     
+    freeaddrinfo (res); 
     printf("%s %s\n",host,serv);
     printf("%s",response);
     
-
-    freeaddrinfo (res); 
-
+    
     CHECK(close(sockfd));
-
-    return 0;
-
-    /* complete struct sockaddr */
-
-    /* link socket to local IP and PORT */
-
-    /* set queue limit for incoming connections */
-
-    /* wait for incoming TCP connection */
-
-    /* print sender addr and port */
-
-    /* wait for incoming message */
-
-    /* close sockets */
-
-    /* free memory */
-
-    /* print received message */
-
     return 0;
 }
