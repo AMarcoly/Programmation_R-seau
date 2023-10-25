@@ -65,7 +65,7 @@ int main (int argc, char *argv [])
     }
     CHECK(bind (sockfd, res->ai_addr, res->ai_addrlen));
     CHECK(listen(sockfd, QUEUE_LENGTH)); // Ici taille de la socket est 1 car on suppose un seul client
-    int socketr=accept(sockfd, res->ai_addr, &res->ai_addrlen);
+    int socketr=accept(sockfd, src_addr->ai_addr, &src_addr->ai_addrlen);
     CHECK(socketr);
 
     CHECK(recv(socketr, response, SIZE, 0));
