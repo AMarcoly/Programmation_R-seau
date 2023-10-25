@@ -42,7 +42,7 @@ int main (int argc, char *argv [])
     hints.ai_family = AF_INET; // IPV4
     hints.ai_socktype = SOCK_STREAM; //TCP
 
-    int fd_addr = getaddrinfo (IP, str_port, &hints, &res);
+    int fd_addr = getaddrinfo (argv[1], str_port, &hints, &res);
     if (fd_addr != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(fd_addr));
         exit(EXIT_FAILURE);
@@ -54,7 +54,6 @@ int main (int argc, char *argv [])
     else{
         /* connect to server */
         CHECK(connect(fd_socket,res->ai_addr,res->ai_addrlen));
-        freeaddrinfo(res);
         /* send message */
         CHECK(send(fd_socket, message, strlen(message), 0));
         freeaddrinfo (res);    
