@@ -19,7 +19,7 @@ int main (int argc, char *argv [])
     }
 
     int port_number = atoi(argv[1]);
-    if(port_number<10000 || port_number > 65000){
+    if(port_number < 10000 || port_number > 65000){
         fprintf(stderr,"Mauvais format de numero de port : intervalle [10 000:65 000]\n");
         exit(EXIT_FAILURE);
     }
