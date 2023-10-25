@@ -199,7 +199,7 @@ sleep 3
 
 nc -4 -w1 $IP $PORT < $OUT/toto
 wait $V
-[ "$?" == "100" ] && echo "KO -> memory pb please check valgrind.log" && exit 1
+[ "$?" == "100" ] && echo "KO -> memory pb please check valgrind.log" && cat $OUT/valgrind.log && exit 1
 
 echo ".....................OK"
 
