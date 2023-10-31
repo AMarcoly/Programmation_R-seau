@@ -77,7 +77,7 @@ int main (int argc, char *argv [])
     /* close file */
     CHECK(close(fd));
     /* free memory */
-    freeaddr(res);
+    freeaddrinfo(res);
 
     return 0;
 }
