@@ -32,7 +32,7 @@ int main (int argc, char *argv [])
 {
      /* test arg number */
     if( argc != 4){
-        fprintf(stderr, "usage: %s ip_addr port_number\n",argv[0]);
+        fprintf(stderr, "usage: %s ip_addr port_number filename\n",argv[0]);
         exit(EXIT_FAILURE);
     }
     /* convert and check port number */
