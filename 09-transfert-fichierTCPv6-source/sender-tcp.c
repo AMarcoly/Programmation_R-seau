@@ -46,7 +46,7 @@ int main (int argc, char *argv [])
     CHECK(fd);
     /* create socket */
     int sockfd;
-    sockfd=socket(AF_INET, SOCK_STREAM, 0);
+    sockfd=socket(AF_INET6, SOCK_STREAM, 0);
     CHECK(sockfd);
     /* complete struct sockaddr */
     
