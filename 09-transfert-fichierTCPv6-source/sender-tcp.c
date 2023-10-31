@@ -69,11 +69,11 @@ int main (int argc, char *argv [])
     }
     /* connect to the remote peer */
      /* connect to server */
-    CHECK(connect(fd_socket,res->ai_addr,res->ai_addrlen));
+    CHECK(connect( sockfd,res->ai_addr,res->ai_addrlen));
     /* send the file content */
-    cpy(fd,fd_socket);
+    cpy(fd, sockfd);
     /* close socket */
-    CHECK(close(fd_socket));
+    CHECK(close(sockfd));
     /* close file */
     CHECK(close(fd));
     /* free memory */
