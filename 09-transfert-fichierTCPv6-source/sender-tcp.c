@@ -66,18 +66,18 @@ int main (int argc, char *argv [])
 
     if(res==NULL){
         exit(EXIT_FAILURE);
+    }else
+    {
+        /* connect to the remote peer */
+        CHECK(connect( sockfd,res->ai_addr,res->ai_addrlen));
+        /* send the file content */
+        cpy(fd, sockfd);
+        /* close socket */
+        CHECK(close(sockfd));
+        /* close file */
+        CHECK(close(fd));
+        /* free memory */
+        freeaddrinfo(res);
     }
-    /* connect to the remote peer */
-     /* connect to server */
-    CHECK(connect( sockfd,res->ai_addr,res->ai_addrlen));
-    /* send the file content */
-    cpy(fd, sockfd);
-    /* close socket */
-    CHECK(close(sockfd));
-    /* close file */
-    CHECK(close(fd));
-    /* free memory */
-    freeaddrinfo(res);
-
     return 0;
 }
