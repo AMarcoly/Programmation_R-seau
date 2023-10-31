@@ -58,7 +58,7 @@ int main (int argc, char *argv [])
     hints.ai_socktype = SOCK_STREAM; //TCP
     hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV; 
 
-    int fd_addr = getaddrinfo (argv[1], str_port, &hints, &res);
+    int fd_addr = getaddrinfo (argv[1], argv[2], &hints, &res);
     if (fd_addr != 0) {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(fd_addr));
         exit(EXIT_FAILURE);
