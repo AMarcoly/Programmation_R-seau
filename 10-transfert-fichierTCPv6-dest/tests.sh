@@ -57,9 +57,10 @@ echo -n "test 04 - error on getaddrinfo: "
 
 nc -n fdjkfslkfj 80 > /dev/null 2> $OUT/error
 ERROR=$(grep -o '\S*$' $OUT/error)
-
 $PROG fdjkfslkfj $PORT > $OUT/stdout 2> $OUT/stderr && echo "KO -> exit status $?"            && exit 1
 [ -s $OUT/stdout ]                                  && echo "KO -> output detected on stdout" && exit 1
+
+
 
 STUDENT=$(grep -o '\S*$' $OUT/stderr)
 [ "$ERROR" != "$STUDENT" ] && echo "KO -> unexpected output on stderr, use gai_strerror whenever getaddrinfo fails" && exit 1

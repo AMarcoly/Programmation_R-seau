@@ -44,13 +44,9 @@ int main (int argc, char *argv [])
         exit(EXIT_FAILURE);
     }
 
-    char response[SIZE];
-    char host[NI_MAXHOST];
-    char serv[NI_MAXSERV];
-
     /* create socket */
     int sockfd;
-    CHECK(sockfd=socket(AF_INET, SOCK_STREAM, 0));
+    CHECK(sockfd=socket(AF_INET6, SOCK_STREAM, 0));
     /* SO_REUSEADDR option allows re-starting the program without delay */
     int iSetOption = 1;
     CHECK (setsockopt (sockfd, SOL_SOCKET, SO_REUSEADDR, &iSetOption,
@@ -78,21 +74,13 @@ int main (int argc, char *argv [])
     }
     else{
         CHECK(bind (sockfd, res->ai_addr, res->ai_addrlen));
-        CHECK(listen(sockfd, QUEUE_LENGTH)); // Ici taille de la socket est 1 car on suppose un seul client
+        CHECK(listen(sockfd, 1)); // Ici taille de la socket est 1 car on suppose un seul client
         int socketr;
         CHECK(socketr=accept(sockfd, src_addr, &lenaddr));
 
-        cpy(socketr, open("copy.tmp", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR));
-
-        CHECK(getnameinfo ((struct sockaddr *)src_addr,lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
-        int nbrc;
-        CHECK(nbrc=recv(socketr, response, SIZE, 0));
+        cpy(socketr, open("copy.tmp", O_WRONLY | O_CREAT | O_TRUNC,0666));
         
         freeaddrinfo (res); 
-        printf("%s %s\n",host,serv);
-        response[nbrc]='\0';
-        printf("%s",response);
-        
         CHECK(close(sockfd));
     }
     
