@@ -50,8 +50,7 @@ int main (int argc, char *argv [])
 
     /* create socket */
     int sockfd;
-    sockfd=socket(AF_INET, SOCK_STREAM, 0);
-    CHECK(sockfd);
+    CHECK(sockfd=socket(AF_INET, SOCK_STREAM, 0));
     /* SO_REUSEADDR option allows re-starting the program without delay */
     int iSetOption = 1;
     CHECK (setsockopt (sockfd, SOL_SOCKET, SO_REUSEADDR, &iSetOption,
@@ -80,8 +79,8 @@ int main (int argc, char *argv [])
     else{
         CHECK(bind (sockfd, res->ai_addr, res->ai_addrlen));
         CHECK(listen(sockfd, QUEUE_LENGTH)); // Ici taille de la socket est 1 car on suppose un seul client
-        int socketr=accept(sockfd, src_addr, &lenaddr);
-        CHECK(socketr);
+        int socketr;
+        CHECK(socketr=accept(sockfd, src_addr, &lenaddr));
 
         cpy(socketr, open("copy.tmp", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR));
 
