@@ -17,21 +17,85 @@
 
 void cpy (int src, int dst)
 {
+    char buffer[SIZE];
+    ssize_t bytes_read;
+    int n;
+
+    while ((bytes_read = read(src, buffer, SIZE)) > 0)
+    {
+        n=write(dst, buffer, bytes_read);
+        CHECK(n);
+    }
+    CHECK(bytes_read);
     return;
 }
 
 int main (int argc, char *argv [])
 {
     /* test arg number */
-
+    if( argc != 3){
+        fprintf(stderr, "usage: %s ip_addr port_number\n",argv[0]);
+        exit(EXIT_FAILURE);
+    }
     /* convert and check port number */
+    int port_number = atoi(argv[2]);
+    if(port_number<10000 || port_number > 65000){
+        fprintf(stderr,"Mauvais format de numero de port : intervalle [10 000:65 000]\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char response[SIZE];
+    char host[NI_MAXHOST];
+    char serv[NI_MAXSERV];
 
     /* create socket */
-
+    int sockfd;
+    sockfd=socket(AF_INET, SOCK_STREAM, 0);
+    CHECK(sockfd);
     /* SO_REUSEADDR option allows re-starting the program without delay */
     int iSetOption = 1;
     CHECK (setsockopt (sockfd, SOL_SOCKET, SO_REUSEADDR, &iSetOption,
 		       sizeof iSetOption));
+
+    struct sockaddr_storage ss;
+    struct sockaddr *src_addr = (struct sockaddr *) &ss;
+    socklen_t lenaddr = sizeof(*src_addr);
+
+    struct addrinfo hints={0};
+    struct addrinfo *res = NULL;
+
+    hints.ai_family = AF_INET6; // IPV6
+    hints.ai_socktype = SOCK_STREAM; // TCP
+    hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV; // Eviter requête DNS
+   
+   int fd_addr = getaddrinfo (argv[1], argv[2], &hints, &res);
+    if (fd_addr != 0) {
+        fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(fd_addr));
+        exit(EXIT_FAILURE);
+    }
+
+    if(res==NULL){
+        exit(EXIT_FAILURE);
+    }
+    CHECK(bind (sockfd, res->ai_addr, res->ai_addrlen));
+    CHECK(listen(sockfd, QUEUE_LENGTH)); // Ici taille de la socket est 1 car on suppose un seul client
+    int socketr=accept(sockfd, src_addr, &lenaddr);
+    CHECK(socketr);
+
+    cpy(socketr, open("copy.tmp", O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR));
+
+    CHECK(getnameinfo ((struct sockaddr *)src_addr,lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_NUMERICHOST));
+    int nbrc;
+    CHECK(nbrc=recv(socketr, response, SIZE, 0));
+    
+    freeaddrinfo (res); 
+    printf("%s %s\n",host,serv);
+    response[nbrc]='\0';
+    printf("%s",response);
+    
+    
+    CHECK(close(sockfd));
+    return 0;
 
     /* complete struct sockaddr */
 
@@ -50,6 +114,4 @@ int main (int argc, char *argv [])
     /* close file */
 
     /* free memory */
-
-    return 0;
 }
