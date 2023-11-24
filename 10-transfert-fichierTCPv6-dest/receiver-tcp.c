@@ -85,22 +85,4 @@ int main (int argc, char *argv [])
     }
     
     return 0;
-
-    /* complete struct sockaddr */
-
-    /* link socket to local IP and PORT */
-
-    /* set queue limit for incoming connections */
-
-    /* wait for incoming TCP connection */
-
-    /* open local file */
-
-    /* get the transmitted file */
-
-    /* close sockets */
-
-    /* close file */
-
-    /* free memory */
 }

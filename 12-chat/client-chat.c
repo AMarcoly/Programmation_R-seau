@@ -15,13 +15,25 @@
 
 int main (int argc, char *argv [])
 {
-    /* test arg number */
+    if (argc != 2) {
+        fprintf(stderr, "usage: %s server_name\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
 
     /* convert and check port number */
+    int port_number = atoi(argv[2]);
+    if(port_number<10000 || port_number > 65000){
+        fprintf(stderr,"Mauvais format de numero de port : intervalle [10 000:65 000]\n");
+        exit(EXIT_FAILURE);
+    }
 
     /* create socket */
-
+    int sockfd;
+    CHECK(sockfd=socket(AF_INET6, SOCK_DGRAM, 0));
     /* set dual stack socket */
+    int value = 0;
+    CHECK (setsockopt (sockfd, IPPROTO_IPV6, IPV6_V6ONLY, &value, sizeof value));
+
 
     /* set local addr */
 
@@ -32,6 +44,7 @@ int main (int argc, char *argv [])
     /* main loop */
 
     /* close socket */
+    CHECK(close(sockfd));
 
     /* free memory */
 
