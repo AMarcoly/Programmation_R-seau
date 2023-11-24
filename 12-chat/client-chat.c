@@ -50,7 +50,7 @@ int main (int argc, char *argv [])
     ss.sin6_addr = in6addr_any;
     socklen_t len_ss = sizeof(ss);
 
-    printf("Connect %hu ",ss.sin6_port);
+    // printf("Connect %hu ",ss.sin6_port);
 
     /* check if a client is already present */
     if (bind(sockfd, (struct sockaddr*)&ss, len_ss) < 0) {
@@ -102,8 +102,7 @@ int main (int argc, char *argv [])
                 printf("Commande /HELO reçue. Adresse distante\n");
             } 
             // Action: send data to the other client
-            // Vous devez implémenter la logique pour envoyer les données au client existant
-            // Utilisez sendto pour envoyer des données à l'adresse et au port connus du client
+
         }
 
         if (fds[1].revents & POLLIN) {
@@ -111,8 +110,6 @@ int main (int argc, char *argv [])
             // Recevoir un message et le traiter
             // ...
             // Event: recv data Action: process data
-            // Vous devez implémenter la logique pour recevoir et traiter les données du client existant
-            // Utilisez recvfrom pour recevoir des données du client existant
         }
         break;
     }
