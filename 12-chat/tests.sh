@@ -17,10 +17,9 @@ timeout 5 $PROG $PORT > /dev/null 2>&1 &
 TO=$!
 sleep 2
 echo -n "/HELO" | nc -6u -w1 localhost $PORT
-echo -n "/QUIT" | nc -6u -w1 localhost $PORT
+# echo -n "/QUIT" | nc -6u -w1 localhost $PORT
 wait $TO
 R=$?
-echo $R 
 [ "$R" == "124" ] && echo "KO -> program times out"           && exit 1
 [ "$R" != "0" ]   && echo "KO -> exit status $R instead of 0" && exit 1
 echo "...OK"

@@ -103,7 +103,7 @@ int main (int argc, char *argv [])
             if(strcmp(buffer, "/HELO\n") == 0) {
                 printf("Commande /HELO reçue. Adresse distante\n");
             } 
-            else if (strcmp(buffer, "/QUIT") == 0)
+            else if (strcmp(buffer, "/QUIT\n") == 0)
             {
                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
             }
