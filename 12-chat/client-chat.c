@@ -127,8 +127,6 @@ int main (int argc, char *argv [])
                 printf("Quit fds1 while\n");
                 CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
             }
-
-            
             // ...
             // Event: recv data Action: process data
         }
@@ -139,7 +137,7 @@ int main (int argc, char *argv [])
     CHECK(close(sockfd));
 
     /* free memory */
-    //   free(src_addr);
+    free(ss);
 
     return 0;
 }
