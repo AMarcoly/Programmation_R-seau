@@ -63,6 +63,7 @@ int main (int argc, char *argv [])
     if (retour == -1) {
         if (errno == EADDRINUSE) {
             // si un client est sur le port, on lui envoie /HELO
+                // envoie message sur meme adresse ecoute,  à verif
             CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr*)&ss, sizeof ss));
         } else {
             perror("bind");
@@ -70,17 +71,14 @@ int main (int argc, char *argv [])
         }
     } else {
         // pas de client sur le port et le bind a réussi, attend un /HELO
-        CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,      \
+        CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
+
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
-            int getname_r=0;
-            getname_r =getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,   \
-            NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST);
-            if(getname_r != 0)
-            {
-                fprintf(stderr,"Error getnameinfo %s\n",gai_strerror(getname_r));
-            }
+            CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
+            NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
+            // printf("host");
             printf("%s %s\n", host, serv);
             
         }
@@ -114,6 +112,7 @@ int main (int argc, char *argv [])
             }
 
         }
+
         if (fds[1].revents & POLLIN) {
             // récupérer data du socket
             // Recevoir un message et le traiter
@@ -132,8 +131,10 @@ int main (int argc, char *argv [])
     /* close socket */
     CHECK(close(sockfd));
 
+    // chechk
     /* free memory */
-    
+    //   free(src_addr);
+
     return 0;
 }
 
