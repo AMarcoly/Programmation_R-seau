@@ -42,6 +42,8 @@ int main (int argc, char *argv [])
         
     ssize_t bytes_received;
 
+    ssize_t len_message_r;
+
     /* create socket */
     int sockfd;
     CHECK(sockfd=socket(AF_INET6, SOCK_DGRAM, 0));
@@ -73,7 +75,9 @@ int main (int argc, char *argv [])
         // pas de client sur le port et le bind a réussi, attend un /HELO
         CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
-
+        
+        if(bytes_received>0 && recv_buffer[bytes_received-1]=='\n')
+                recv_buffer[bytes_received - 1] = '\0';
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
@@ -102,6 +106,11 @@ int main (int argc, char *argv [])
         if (fds[0].revents & POLLIN) { // dans l'entrée standard
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
+            
+            len_message_r = strlen(buffer);
+            if(len_message_r > 0 && recv_buffer[len_message_r - 1] == '\n')
+                recv_buffer[len_message_r - 1] = '\0';
+                
             if(strcmp(buffer, "/QUIT") != 0) {
                CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&ss, sizeof ss));  
             } 
@@ -116,10 +125,13 @@ int main (int argc, char *argv [])
         if (fds[1].revents & POLLIN) {
             // récupérer data du socket
             // Recevoir un message et le traiter
-             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
+            CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
-            // Traitement du message reçu
-            if (strcmp(recv_buffer, "/QUIT") == 0) {
+            if(bytes_received>0 && recv_buffer[bytes_received-1]=='\n')
+                recv_buffer[bytes_received - 1] = '\0';
+                    // Traitement du message reçu
+            if (strcmp(recv_buffer, "/QUIT") == 0)
+            {
                 run = 0;
             }
             else{
@@ -131,9 +143,8 @@ int main (int argc, char *argv [])
     /* close socket */
     CHECK(close(sockfd));
 
-    // chechk
     /* free memory */
-    //   free(src_addr);
+ 
 
     return 0;
 }
