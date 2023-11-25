@@ -68,7 +68,7 @@ int main (int argc, char *argv [])
             // si un client est sur le port, on lui envoie /HELO
 
             // test
-            printf("Helo retour bind\n");
+            // printf("Helo retour bind\n");
             // test
 
             CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr*)&ss, sizeof ss));
@@ -84,7 +84,7 @@ int main (int argc, char *argv [])
         if (strcmp(recv_buffer, "/HELO") == 0) {
 
             // test
-            printf("Helo itération 1\n");
+            // printf("Helo itération 1\n");
             // test
 
             CHECK(getnameinfo ((struct sockaddr *)src_addr, lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
@@ -111,13 +111,13 @@ int main (int argc, char *argv [])
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
             // traitement
-            printf("%s\n", buffer);
+            printf("%s len :%d\n", buffer, strlen(buffer));
             if(strcmp(buffer, "/HELO\n") == 0) {
                 // CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
 
                 printf("Commande /HELO reçue. Adresse distante\n");
             } 
-            else if (strcmp(buffer, "/QUIT\n") == 0)
+            else if (strcmp(buffer, "/QUIT") == 0)
             {
                 printf("test elseif boucle\n");
                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
