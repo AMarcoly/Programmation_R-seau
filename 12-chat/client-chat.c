@@ -120,7 +120,7 @@ int main (int argc, char *argv [])
              CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
             // Traitement du message reçu
-            if (strcmp(recv_buffer, "/QUIT") == 0) {
+            if (strcmp(recv_buffer, "/QUIT\n") == 0) {
                 CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
             }
 
