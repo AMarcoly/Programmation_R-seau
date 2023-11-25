@@ -63,7 +63,6 @@ int main (int argc, char *argv [])
     if (retour == -1) {
         if (errno == EADDRINUSE) {
             // si un client est sur le port, on lui envoie /HELO
-                // envoie message sur meme adresse ecoute,  à verif
             CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr*)&ss, sizeof ss));
         } else {
             perror("bind");
@@ -130,11 +129,9 @@ int main (int argc, char *argv [])
 
     /* close socket */
     CHECK(close(sockfd));
-
-    // chechk
+    
     /* free memory */
-    //   free(src_addr);
-
+    
     return 0;
 }
 
