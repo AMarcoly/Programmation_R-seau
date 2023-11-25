@@ -111,6 +111,9 @@ int main (int argc, char *argv [])
             {
                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
             }
+            else{
+                printf("%s\n", buffer);
+            }
             // Action: send data to the other client
 
         }
