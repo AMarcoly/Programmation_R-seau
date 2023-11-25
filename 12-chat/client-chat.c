@@ -111,6 +111,7 @@ int main (int argc, char *argv [])
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
             // traitement
+            printf("%s\n", buffer);
             if(strcmp(buffer, "/HELO\n") == 0) {
                 // CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
 
