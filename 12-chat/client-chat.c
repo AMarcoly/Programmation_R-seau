@@ -90,7 +90,7 @@ int main (int argc, char *argv [])
     fds[1].fd = sockfd;
     fds[1].events = POLLIN;
 
-    char buffer[MAX_SIZE];
+    char buffer[MAX_SIZE] = {0};
 
    
     /* main loop */
