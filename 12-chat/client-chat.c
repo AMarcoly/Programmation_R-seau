@@ -31,6 +31,7 @@ int main (int argc, char *argv [])
     }
 
     char * msg = "/HELO";
+    char * quitter = "/QUIT";
     (void)msg;
     char recv_buffer[MAX_SIZE];
 
@@ -103,6 +104,10 @@ int main (int argc, char *argv [])
 
                 printf("Commande /HELO reçue. Adresse distante\n");
             } 
+            else if (strcmp(buffer, "/QUIT\n") == 0)
+            {
+               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
+            }
             // Action: send data to the other client
 
         }
