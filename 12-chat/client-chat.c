@@ -29,7 +29,6 @@ int main (int argc, char *argv [])
         65 000]\n");
         exit(EXIT_FAILURE);
     }
-    printf("Port number %d\n", port_number);
 
     char * msg = "/HELO";
     (void)msg;
@@ -50,33 +49,36 @@ int main (int argc, char *argv [])
     ss.sin6_addr = in6addr_any;
     socklen_t len_ss = sizeof(ss);
 
-    // printf("Connect %hu ",ss.sin6_port);
-
     /* check if a client is already present */
-    if (bind(sockfd, (struct sockaddr*)&ss, len_ss) < 0) {
+    int retour;
+    retour = bind(sockfd, (struct sockaddr*)&ss, len_ss) ;
+    if (retour == -1) {
         if (errno == EADDRINUSE) {
             // si un client est sur le port, on lui envoie /HELO
-            printf("Envoi du message /HELO au client existant...\n");
-            CHECK(sendto(sockfd, "/HELO", 5, 0, (struct sockaddr*)&ss, sizeof ss));
+            CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr*)&ss, sizeof ss));
         } else {
             perror("bind");
             exit(EXIT_FAILURE);
         }
     } else {
         // pas de client sur le port et le bind a réussi, attend un /HELO
-        printf("Waiting for /HELO from the other client...\n");
-
         ssize_t bytes_received;
         CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
-            printf("Commande /HELO reçue\n");
+            
+            char host[NI_MAXHOST];
+            char serv[NI_MAXSERV];
+
+            
+            struct sockaddr_storage * src_addr = malloc(sizeof *src_addr);
+            socklen_t lenaddr = sizeof *src_addr;
+            CHECK(getnameinfo ((struct sockaddr *)src_addr, lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
+            printf("%s %s\n",host,serv);
+            free(src_addr);
         }
     }
-
-
-     return 0;
     
     /* prepare struct pollfd with stdin and socket for incoming data */
     struct pollfd fds[2];
@@ -90,7 +92,7 @@ int main (int argc, char *argv [])
    
     /* main loop */
     while (1) {
-        CHECK(poll(fds, 2, -1));  // Wait indefinitely for events
+        CHECK(poll(fds, 2, -1)); 
 
         if (fds[0].revents & POLLIN) { // dans l'entrée standard
             // Je récupère les données écrites
