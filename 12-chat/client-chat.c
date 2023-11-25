@@ -95,26 +95,21 @@ int main (int argc, char *argv [])
 
    
     /* main loop */
-    while (1) {
+    int run= 1;
+    while (run) {
         CHECK(poll(fds, 2, -1)); 
 
         if (fds[0].revents & POLLIN) { // dans l'entrée standard
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
-            // traitement
-            // test
-            // printf("%s len :%ld\n", buffer, strlen(buffer));
-            // test
-            if(strcmp(buffer, "/HELO\n") == 0) {
-                // CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
-
-                printf("Commande /HELO reçue. Adresse distante\n");
+            if(strcmp(buffer, "/QUIT") != 0) {
+               CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&ss, sizeof ss));  
             } 
             else if (strcmp(buffer, "/QUIT") == 0)
             {
                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
+               run = 0;
             }
-            // Action: send data to the other client
 
         }
 
@@ -124,16 +119,13 @@ int main (int argc, char *argv [])
              CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
             // Traitement du message reçu
-            if (strcmp(recv_buffer, "/QUIT\n") == 0) {
-                printf("Quit fds1 while\n");
-                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
+            if (strcmp(recv_buffer, "/QUIT") == 0) {
+                run = 0;
             }
-
-            
-            // ...
-            // Event: recv data Action: process data
+            else{
+                printf("%s\n", recv_buffer);
+            }
         }
-        break;
     }
 
     /* close socket */
