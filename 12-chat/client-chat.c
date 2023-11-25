@@ -75,7 +75,7 @@ int main (int argc, char *argv [])
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
-            NI_MAXHOST,serv, NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV));
+            NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST | NI_NUMERICSERV));
             printf("%s %s\n", host, serv);
             
         }
