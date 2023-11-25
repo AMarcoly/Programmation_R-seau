@@ -33,7 +33,7 @@ int main (int argc, char *argv [])
     // Data
     char * msg = "/HELO";
     char * quitter = "/QUIT";
-
+    (void)msg;
     char recv_buffer[MAX_SIZE];
 
     char host[NI_MAXHOST];
@@ -105,6 +105,8 @@ int main (int argc, char *argv [])
             // printf("%s len :%ld\n", buffer, strlen(buffer));
             // test
             if(strcmp(buffer, "/HELO\n") == 0) {
+                // CHECK(getnameinfo ((struct sockaddr *)src_addr, sizeof *src_addr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
+
                 printf("Commande /HELO reçue. Adresse distante\n");
             } 
             else if (strcmp(buffer, "/QUIT") == 0)
@@ -125,6 +127,8 @@ int main (int argc, char *argv [])
                 printf("Quit fds1 while\n");
                 CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
             }
+
+            
             // ...
             // Event: recv data Action: process data
         }
@@ -135,7 +139,8 @@ int main (int argc, char *argv [])
     CHECK(close(sockfd));
 
     /* free memory */
-    // free(ss);
+    //   free(src_addr);
 
     return 0;
 }
+
