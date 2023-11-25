@@ -30,10 +30,20 @@ int main (int argc, char *argv [])
         exit(EXIT_FAILURE);
     }
 
+    // Data
     char * msg = "/HELO";
     char * quitter = "/QUIT";
     (void)msg;
     char recv_buffer[MAX_SIZE];
+
+    char host[NI_MAXHOST];
+    char serv[NI_MAXSERV];
+
+            
+    struct sockaddr_storage * src_addr = malloc(sizeof *src_addr);
+    socklen_t lenaddr = sizeof *src_addr;
+
+    ssize_t bytes_received;
 
     /* create socket */
     int sockfd;
@@ -63,26 +73,14 @@ int main (int argc, char *argv [])
         }
     } else {
         // pas de client sur le port et le bind a réussi, attend un /HELO
-        ssize_t bytes_received;
         CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
-            
-            char host[NI_MAXHOST];
-            char serv[NI_MAXSERV];
-
-            
-            struct sockaddr_storage * src_addr = malloc(sizeof *src_addr);
-            socklen_t lenaddr = sizeof *src_addr;
             CHECK(getnameinfo ((struct sockaddr *)src_addr, lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
             printf("%s %s\n",host,serv);
-            free(src_addr);
+            
         }
-        else if (strcmp(recv_buffer, "/QUIT\n") == 0)
-            {
-               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
-            }
     }
     
     /* prepare struct pollfd with stdin and socket for incoming data */
@@ -119,6 +117,13 @@ int main (int argc, char *argv [])
         if (fds[1].revents & POLLIN) {
             // récupérer data du socket
             // Recevoir un message et le traiter
+             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
+                (struct sockaddr*)&ss, &len_ss));
+            // Traitement du message reçu
+            if (strcmp(recv_buffer, "/QUIT") == 0) {
+                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
+            }
+
             
             // ...
             // Event: recv data Action: process data
@@ -130,6 +135,7 @@ int main (int argc, char *argv [])
     CHECK(close(sockfd));
 
     /* free memory */
+    free(src_addr);
 
     return 0;
 }
