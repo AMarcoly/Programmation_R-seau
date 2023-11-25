@@ -63,6 +63,7 @@ int main (int argc, char *argv [])
     if (retour == -1) {
         if (errno == EADDRINUSE) {
             // si un client est sur le port, on lui envoie /HELO
+                // envoie message sur meme adresse ecoute,  à verif
             CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr*)&ss, sizeof ss));
         } else {
             perror("bind");
@@ -111,8 +112,7 @@ int main (int argc, char *argv [])
             } 
             else if (strcmp(buffer, "/QUIT") == 0)
             {
-               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
-               break; 
+               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
             }
             // Action: send data to the other client
 
@@ -127,14 +127,13 @@ int main (int argc, char *argv [])
             if (strcmp(recv_buffer, "/QUIT\n") == 0) {
                 printf("Quit fds1 while\n");
                 CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
-                break;
             }
 
             
             // ...
             // Event: recv data Action: process data
         }
-        //break;
+        break;
     }
 
     /* close socket */
@@ -146,4 +145,5 @@ int main (int argc, char *argv [])
 
     return 0;
 }
+
 
