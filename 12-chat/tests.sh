@@ -70,6 +70,5 @@ echo -n "/QUIT" | nc -4u -w1 localhost $PORT
 wait $V
 # [ "$?" == "100" ] && echo "KO -> memory pb please check file valgrind.log" && exit 1
 [ "$?" == "100" ] && echo "KO -> memory pb" && cat valgrind.log && rm valgrind.log && exit 1
-
-# rm valgrind.log
+rm valgrind.log
 echo "..........................OK"
