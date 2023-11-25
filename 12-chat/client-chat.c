@@ -111,7 +111,8 @@ int main (int argc, char *argv [])
             } 
             else if (strcmp(buffer, "/QUIT") == 0)
             {
-               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
+               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
+               break; 
             }
             // Action: send data to the other client
 
@@ -126,13 +127,14 @@ int main (int argc, char *argv [])
             if (strcmp(recv_buffer, "/QUIT\n") == 0) {
                 printf("Quit fds1 while\n");
                 CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
+                break;
             }
 
             
             // ...
             // Event: recv data Action: process data
         }
-        break;
+        //break;
     }
 
     /* close socket */
