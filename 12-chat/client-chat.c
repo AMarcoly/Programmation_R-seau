@@ -76,10 +76,10 @@ int main (int argc, char *argv [])
         if (strcmp(recv_buffer, "/HELO") == 0) {
             int getname_r=0;
             getname_r =getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,   \
-            NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST)
+            NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST);
             if(getname_r != 0)
             {
-                fprintf(stderr,gai_strerror(getname_r));
+                fprintf(stderr,"Error getnameinfo %s\n",gai_strerror(getname_r));
             }
             printf("%s %s\n", host, serv);
             
