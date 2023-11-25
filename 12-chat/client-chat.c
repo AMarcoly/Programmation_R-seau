@@ -72,10 +72,12 @@ int main (int argc, char *argv [])
         // pas de client sur le port et le bind a réussi, attend un /HELO
         CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
+
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
-            NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST | NI_NUMERICSERV));
+            NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
+            // printf("host");
             printf("%s %s\n", host, serv);
             
         }
