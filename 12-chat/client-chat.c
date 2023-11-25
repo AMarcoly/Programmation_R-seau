@@ -66,6 +66,11 @@ int main (int argc, char *argv [])
     if (retour == -1) {
         if (errno == EADDRINUSE) {
             // si un client est sur le port, on lui envoie /HELO
+
+            // test
+            printf("Helo retour bind\n");
+            // test
+
             CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr*)&ss, sizeof ss));
         } else {
             perror("bind");
@@ -77,6 +82,11 @@ int main (int argc, char *argv [])
                 (struct sockaddr*)&ss, &len_ss));
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
+
+            // test
+            printf("Helo itération 1\n");
+            // test
+
             CHECK(getnameinfo ((struct sockaddr *)src_addr, lenaddr, host, NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
             printf("%s %s\n",host,serv);
             
@@ -108,6 +118,7 @@ int main (int argc, char *argv [])
             } 
             else if (strcmp(buffer, "/QUIT\n") == 0)
             {
+                printf("test elseif boucle\n");
                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
             }
             // Action: send data to the other client
@@ -121,6 +132,7 @@ int main (int argc, char *argv [])
                 (struct sockaddr*)&ss, &len_ss));
             // Traitement du message reçu
             if (strcmp(recv_buffer, "/QUIT\n") == 0) {
+                printf("Quit fds1 while\n");
                 CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss));
             }
 
