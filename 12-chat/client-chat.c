@@ -42,7 +42,7 @@ int main (int argc, char *argv [])
         
     ssize_t bytes_received;
 
-    ssize_t len_message_r;
+    // ssize_t len_message_r;
 
     /* create socket */
     int sockfd;
@@ -77,7 +77,7 @@ int main (int argc, char *argv [])
                 (struct sockaddr*)&ss, &len_ss));
         
         if(bytes_received>0 && recv_buffer[bytes_received-1]=='\n')
-                recv_buffer[bytes_received - 1] = '\0';
+                // recv_buffer[bytes_received - 1] = '\0';
         // Traitement du message reçu
         if (strcmp(recv_buffer, "/HELO") == 0) {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
@@ -107,10 +107,9 @@ int main (int argc, char *argv [])
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
             
-            len_message_r = strlen(buffer);
-            if(len_message_r > 0 && recv_buffer[len_message_r - 1] == '\n')
-                recv_buffer[len_message_r - 1] = '\0';
-                
+            
+            // recv_buffer[len_message_r - 1] = '\0';
+
             if(strcmp(buffer, "/QUIT") != 0) {
                CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&ss, sizeof ss));  
             } 
@@ -127,8 +126,8 @@ int main (int argc, char *argv [])
             // Recevoir un message et le traiter
             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
-            if(bytes_received>0 && recv_buffer[bytes_received-1]=='\n')
-                recv_buffer[bytes_received - 1] = '\0';
+           
+            // recv_buffer[bytes_received - 1] = '\0';
                     // Traitement du message reçu
             if (strcmp(recv_buffer, "/QUIT") == 0)
             {
