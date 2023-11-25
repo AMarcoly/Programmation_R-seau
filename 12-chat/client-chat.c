@@ -79,7 +79,7 @@ int main (int argc, char *argv [])
             printf("%s %s\n",host,serv);
             free(src_addr);
         }
-        else if (strcmp(buffer, "/QUIT\n") == 0)
+        else if (strcmp(recv_buffer, "/QUIT\n") == 0)
             {
                CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
             }
