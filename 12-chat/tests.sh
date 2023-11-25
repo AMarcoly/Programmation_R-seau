@@ -17,7 +17,7 @@ timeout 5 $PROG $PORT > /dev/null 2>&1 &
 TO=$!
 sleep 2
 echo -n "/HELO" | nc -6u -w1 localhost $PORT
-# echo -n "/QUIT" | nc -6u -w1 localhost $PORT
+echo -n "/QUIT" | nc -6u -w1 localhost $PORT
 wait $TO
 R=$?
 [ "$R" == "124" ] && echo "KO -> program times out"           && exit 1
@@ -69,6 +69,6 @@ echo -n "/HELO" | nc -4u -w1 localhost $PORT
 echo -n "/QUIT" | nc -4u -w1 localhost $PORT
 wait $V
 [ "$?" == "100" ] && echo "KO -> memory pb please check file valgrind.log" && exit 1
-cat valgrind.log
+echo valgrind.log
 rm valgrind.log
 echo "..........................OK"
