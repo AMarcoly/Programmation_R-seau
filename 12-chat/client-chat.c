@@ -79,6 +79,10 @@ int main (int argc, char *argv [])
             printf("%s %s\n",host,serv);
             free(src_addr);
         }
+        else if (strcmp(buffer, "/QUIT\n") == 0)
+            {
+               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
+            }
     }
     
     /* prepare struct pollfd with stdin and socket for incoming data */
@@ -115,6 +119,7 @@ int main (int argc, char *argv [])
         if (fds[1].revents & POLLIN) {
             // récupérer data du socket
             // Recevoir un message et le traiter
+            
             // ...
             // Event: recv data Action: process data
         }
