@@ -32,7 +32,7 @@ int main (int argc, char *argv [])
 
     // Data
     char * msg = "/HELO";
-    char * quitter = "/QUIT";
+    //char * quitter = "/QUIT";
     (void)msg;
     char recv_buffer[MAX_SIZE];
 
@@ -75,7 +75,7 @@ int main (int argc, char *argv [])
                 (struct sockaddr*)&ss, &len_ss));
 
         // Traitement du message reçu
-        if (strcmp(recv_buffer, "/HELO") == 0) {
+        if (strncmp(recv_buffer, "/HELO",5) == 0) {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
             NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
             // printf("host");
@@ -102,14 +102,14 @@ int main (int argc, char *argv [])
         if (fds[0].revents & POLLIN) { // dans l'entrée standard
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
-            if(strcmp(buffer, "/QUIT") != 0) {
-               CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr*)&ss, sizeof ss));  
-            } 
-            else if (strcmp(buffer, "/QUIT") == 0)
-            {
-               CHECK(sendto(sockfd, quitter, strlen(quitter), 0, (struct sockaddr*)&ss, sizeof ss)); 
-               run = 0;
-            }
+           if(strncmp(buffer,"/QUIT",5)==0)
+           {
+                CHECK(sendto(sockfd,buffer,strlen(buffer),0,(struct sockaddr*)&ss,sizeof ss));
+                run = 0;
+           }
+           else{
+            CHECK(sendto(sockfd,buffer,strlen(buffer),0,(struct sockaddr*)&ss,sizeof ss));
+           }
 
         }
 
@@ -119,7 +119,7 @@ int main (int argc, char *argv [])
              CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
             // Traitement du message reçu
-            if (strcmp(recv_buffer, "/QUIT") == 0) {
+            if (strncmp(recv_buffer, "/QUIT",5) == 0) {
                 run = 0;
             }
             else{
