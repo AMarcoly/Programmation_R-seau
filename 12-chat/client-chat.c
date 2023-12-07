@@ -38,8 +38,6 @@ int main (int argc, char *argv [])
 
     // Data
     char * msg = "/HELO";
-    char * quitter = "/QUIT";
-    (void)quitter;
     char recv_buffer[MAX_SIZE];
 
     char host[NI_MAXHOST];
@@ -86,7 +84,6 @@ int main (int argc, char *argv [])
         if (strncmp(recv_buffer, "/HELO",5) == 0) {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
             NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
-            //printf("%s\n",recv_buffer);
             printf("%s %s\n", host, serv);
             
         }
@@ -105,14 +102,13 @@ int main (int argc, char *argv [])
     /* main loop */
     int run= 1;
     int taille_buffer=0;
-    clean_buffer();
+
     while (run) {
         CHECK(poll(fds, 2, -1)); 
 
         if (fds[0].revents & POLLIN) { // dans l'entrée standard
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
-            printf("taille buffer envoye %ld\n",strlen(buffer));
            if(strncmp(buffer,"/QUIT",5)==0)
            {
                 CHECK(sendto(sockfd,buffer,strlen(buffer),0,(struct sockaddr*)&ss,sizeof ss));
@@ -120,7 +116,7 @@ int main (int argc, char *argv [])
            }
            else{
             taille_buffer = strlen(buffer);
-            buffer[taille_buffer]='\0';
+            buffer[taille_buffer-1]='\0';
             CHECK(sendto(sockfd,buffer,taille_buffer,0,(struct sockaddr*)&ss,sizeof ss));
            }
         }
@@ -130,7 +126,6 @@ int main (int argc, char *argv [])
             // Recevoir un message et le traiter
             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
-            printf(" taille buffer recu %ld\n",strlen(recv_buffer));
             
             // Traitement du message reçu
             if (strncmp(recv_buffer, "/QUIT",5) == 0) {
@@ -138,7 +133,6 @@ int main (int argc, char *argv [])
             }
             else{
                 printf("%s\n", recv_buffer);
-                //clean_buffer();
             }
             
         }
