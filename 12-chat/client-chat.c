@@ -15,6 +15,12 @@
 
 #define MAX_SIZE 256
 
+void clean_buffer()
+{
+    int c;
+    while((c=getchar()) != '\n' && c != EOF);
+}
+
 int main (int argc, char *argv [])
 {
     if (argc != 2) {
@@ -32,8 +38,8 @@ int main (int argc, char *argv [])
 
     // Data
     char * msg = "/HELO";
-    //char * quitter = "/QUIT";
-    (void)msg;
+    char * quitter = "/QUIT";
+    (void)quitter;
     char recv_buffer[MAX_SIZE];
 
     char host[NI_MAXHOST];
@@ -41,6 +47,14 @@ int main (int argc, char *argv [])
 
         
     ssize_t bytes_received;
+
+    /* set local addr */
+    struct sockaddr_in6 ss={0};
+    ss.sin6_family = AF_INET6;
+    ss.sin6_port = PORT(atoi(argv[1]));
+    ss.sin6_addr = in6addr_any;
+    socklen_t len_ss = sizeof(ss);
+
 
     /* create socket */
     int sockfd;
@@ -50,12 +64,6 @@ int main (int argc, char *argv [])
     int value = 0;
     CHECK(setsockopt (sockfd, IPPROTO_IPV6, IPV6_V6ONLY, &value, sizeof value));
 
-    /* set local addr */
-    struct sockaddr_in6 ss={0};
-    ss.sin6_family = AF_INET6;
-    ss.sin6_port = PORT(atoi(argv[1]));
-    ss.sin6_addr = in6addr_any;
-    socklen_t len_ss = sizeof(ss);
 
     /* check if a client is already present */
     int retour;
@@ -78,7 +86,7 @@ int main (int argc, char *argv [])
         if (strncmp(recv_buffer, "/HELO",5) == 0) {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,        \
             NI_MAXHOST,serv, NI_MAXSERV, NI_DGRAM|NI_NUMERICHOST));
-            // printf("host");
+            //printf("%s\n",recv_buffer);
             printf("%s %s\n", host, serv);
             
         }
@@ -96,35 +104,43 @@ int main (int argc, char *argv [])
    
     /* main loop */
     int run= 1;
+    int taille_buffer=0;
+    clean_buffer();
     while (run) {
         CHECK(poll(fds, 2, -1)); 
 
         if (fds[0].revents & POLLIN) { // dans l'entrée standard
             // Je récupère les données écrites
             fgets(buffer, MAX_SIZE, stdin);
+            printf("taille buffer envoye %ld\n",strlen(buffer));
            if(strncmp(buffer,"/QUIT",5)==0)
            {
                 CHECK(sendto(sockfd,buffer,strlen(buffer),0,(struct sockaddr*)&ss,sizeof ss));
                 run = 0;
            }
            else{
-            CHECK(sendto(sockfd,buffer,strlen(buffer),0,(struct sockaddr*)&ss,sizeof ss));
+            taille_buffer = strlen(buffer);
+            buffer[taille_buffer]='\0';
+            CHECK(sendto(sockfd,buffer,taille_buffer,0,(struct sockaddr*)&ss,sizeof ss));
            }
-
         }
 
         if (fds[1].revents & POLLIN) {
             // récupérer data du socket
             // Recevoir un message et le traiter
-             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
+            CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                 (struct sockaddr*)&ss, &len_ss));
+            printf(" taille buffer recu %ld\n",strlen(recv_buffer));
+            
             // Traitement du message reçu
             if (strncmp(recv_buffer, "/QUIT",5) == 0) {
                 run = 0;
             }
             else{
                 printf("%s\n", recv_buffer);
+                //clean_buffer();
             }
+            
         }
     }
 
