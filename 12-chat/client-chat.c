@@ -7,8 +7,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
-#include <stdint.h>
-#include <netinet/in.h>
 
 #define CHECK(op)               \
     do                          \
@@ -25,13 +23,15 @@
 #define MAX_SIZE 256
 
 #ifdef BIN
+
 #define H 0x01
 #define Q 0x02
 
-struct messageB
+struct messageBinaire
 {
     uint8_t msgB;
 };
+
 #endif
 
 void clean_buffer()
@@ -67,10 +67,6 @@ int main(int argc, char *argv[])
 
     ssize_t bytes_received;
 
-#ifdef BIN
-    struct messageB message;
-#endif
-
     /* set local addr */
     struct sockaddr_in6 ss = {0};
     ss.sin6_family = AF_INET6;
@@ -95,14 +91,7 @@ int main(int argc, char *argv[])
         {
             // si un client est sur le port, on lui envoie /HELO
             // envoie message sur meme adresse ecoute,  à verif
-#ifdef BIN
-            message.msgB = H;
-            CHECK(sendto(sockfd, &message, sizeof(message), 0, (struct sockaddr *)&ss,
-                         sizeof ss));
-#else
-            CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *)&ss,
-                         sizeof ss));
-#endif
+            CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *)&ss, sizeof ss));
         }
         else
         {
@@ -115,16 +104,7 @@ int main(int argc, char *argv[])
         // pas de client sur le port et le bind a réussi, attend un /HELO
         CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                                         (struct sockaddr *)&ss, &len_ss));
-#ifdef BIN
-        // Traitement du message reçu
-        int i = 0;
-        if (recv_buffer[i] == H)
-        {
-            CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,
-                              NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM | NI_NUMERICHOST));
-            printf("%s %s\n", host, serv);
-        }
-#else
+
         // Traitement du message reçu
         if (strncmp(recv_buffer, "/HELO", 5) == 0)
         {
@@ -132,7 +112,6 @@ int main(int argc, char *argv[])
                               NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM | NI_NUMERICHOST));
             printf("%s %s\n", host, serv);
         }
-#endif
     }
 
     /* prepare struct pollfd with stdin and socket for incoming data */
@@ -155,54 +134,27 @@ int main(int argc, char *argv[])
         if (fds[0].revents & POLLIN)
         { // dans l'entrée standard
             // Je récupère les données écrites
-            if (fgets(buffer, MAX_SIZE, stdin) == NULL)
-            {
-                perror("fgets");
-                exit(EXIT_FAILURE);
-            }
-#ifdef BIN
-            int i = 0;
-            if (buffer[i] == Q)
-            {
-                CHECK(sendto(sockfd, &message, sizeof(message), 0, (struct sockaddr *)&ss,
-                             sizeof ss));
-                run = 0;
-            }
-#else
+            fgets(buffer, MAX_SIZE, stdin);
             if (strncmp(buffer, "/QUIT", 5) == 0)
             {
-                CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr *)&ss,
-                             sizeof ss));
+                CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr *)&ss, sizeof ss));
                 run = 0;
             }
-#endif
             else
             {
                 taille_buffer = strlen(buffer);
                 buffer[taille_buffer - 1] = '\0';
-                CHECK(sendto(sockfd, buffer, taille_buffer, 0, (struct sockaddr *)&ss,
-                             sizeof ss));
+                CHECK(sendto(sockfd, buffer, taille_buffer, 0, (struct sockaddr *)&ss, sizeof ss));
             }
         }
+
         if (fds[1].revents & POLLIN)
         {
             // récupérer data du socket
             // Recevoir un message et le traiter
-#ifdef BIN
             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                                             (struct sockaddr *)&ss, &len_ss));
-            if (recv_buffer[i] == Q)
-            {
-                run = 0;
-            }
-            else
-            {
-                printf("%s\n", recv_buffer);
-                // printf("/QUIT\n");
-            }
-#else
-            CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
-                                            (struct sockaddr *)&ss, &len_ss));
+
             // Traitement du message reçu
             if (strncmp(recv_buffer, "/QUIT", 5) == 0)
             {
@@ -212,7 +164,6 @@ int main(int argc, char *argv[])
             {
                 printf("%s\n", recv_buffer);
             }
-#endif
         }
     }
 
