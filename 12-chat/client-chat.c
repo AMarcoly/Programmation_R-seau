@@ -22,6 +22,16 @@
 
 #define MAX_SIZE 256
 
+#ifdef BIN
+#define H 0x01
+#define Q 0x02
+
+struct messageB
+{
+    uint8_t msgB;
+};
+#endif
+
 void clean_buffer()
 {
     int c;
