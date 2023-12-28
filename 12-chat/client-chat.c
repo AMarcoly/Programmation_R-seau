@@ -92,8 +92,10 @@ int main(int argc, char *argv[])
         if (errno == EADDRINUSE)
         {
 #ifdef BIN
+            // si un client est sur le port, on lui envoie /H qui est 0x01
             messageBinaire.msgB = H;
-            CHECK(sendto(sockfd, messageBinaire, strlen(messageBinaire), 0, (struct sockaddr *)&ss, sizeof ss));
+            CHECK(sendto(sockfd, &messageBinaire, sizeof(messageBinaire), 0, (struct sockaddr *)&ss, sizeof ss));
+            // printf("send binaire\n");
 #else
             // si un client est sur le port, on lui envoie /HELO
             // envoie message sur meme adresse ecoute,  à verif
@@ -111,14 +113,28 @@ int main(int argc, char *argv[])
         // pas de client sur le port et le bind a réussi, attend un /HELO
         CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                                         (struct sockaddr *)&ss, &len_ss));
-
+#ifdef BIN
+        for (int i = 0; i < bytes_received; i++)
+        {
+            // printf("%x", recv_buffer[i]);
+            if (recv_buffer[i] == H)
+            {
+                // printf("HELO");
+                CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,
+                                  NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM | NI_NUMERICHOST));
+                printf("%s %s\n", host, serv);
+            }
+        }
+#else
         // Traitement du message reçu
         if (strncmp(recv_buffer, "/HELO", 5) == 0)
         {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,
                               NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM | NI_NUMERICHOST));
+            // printf("%s\n", recv_buffer);
             printf("%s %s\n", host, serv);
         }
+#endif
     }
 
     /* prepare struct pollfd with stdin and socket for incoming data */
@@ -144,8 +160,15 @@ int main(int argc, char *argv[])
             fgets(buffer, MAX_SIZE, stdin);
             if (strncmp(buffer, "/QUIT", 5) == 0)
             {
+#ifdef BIN
+                // printf("QUIT\n");
+                messageBinaire.msgB = Q;
+                CHECK(sendto(sockfd, &messageBinaire, sizeof(messageBinaire), 0, (struct sockaddr *)&ss, sizeof ss));
+                run = 0;
+#else
                 CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr *)&ss, sizeof ss));
                 run = 0;
+#endif
             }
             else
             {
@@ -161,16 +184,17 @@ int main(int argc, char *argv[])
             // Recevoir un message et le traiter
             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                                             (struct sockaddr *)&ss, &len_ss));
-
+#ifdef BIN
+            int i = 0;
+            if (recv_buffer[i] == Q)
+                run = 0;
+#else
             // Traitement du message reçu
             if (strncmp(recv_buffer, "/QUIT", 5) == 0)
-            {
                 run = 0;
-            }
+#endif
             else
-            {
                 printf("%s\n", recv_buffer);
-            }
         }
     }
 
