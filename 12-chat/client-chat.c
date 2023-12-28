@@ -65,6 +65,10 @@ int main(int argc, char *argv[])
 
     ssize_t bytes_received;
 
+#ifdef BIN
+    struct messageB messageBinaire; // Prq je mettrai un pointeur?
+#endif
+
     /* set local addr */
     struct sockaddr_in6 ss = {0};
     ss.sin6_family = AF_INET6;
@@ -87,9 +91,14 @@ int main(int argc, char *argv[])
     {
         if (errno == EADDRINUSE)
         {
+#ifdef BIN
+            messageBinaire.msgB = H;
+            CHECK(sendto(sockfd, messageBinaire, strlen(messageBinaire), 0, (struct sockaddr *)&ss, sizeof ss));
+#else
             // si un client est sur le port, on lui envoie /HELO
             // envoie message sur meme adresse ecoute,  à verif
             CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *)&ss, sizeof ss));
+#endif
         }
         else
         {
