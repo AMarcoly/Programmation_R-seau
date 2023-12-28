@@ -90,11 +90,19 @@ int main(int argc, char *argv[])
         if (errno == EADDRINUSE)
         {
             // si un client est sur le port, on lui envoie /HELO
+<<<<<<< HEAD
             // envoie message sur meme adresse ecoute,  à verif
             CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *)&ss, sizeof ss));
         }
         else
         {
+=======
+            // envoie message sur meme adresse ecoute,  à verif
+            CHECK(sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr *)&ss, sizeof ss));
+        }
+        else
+        {
+>>>>>>> 620d155a52f83ad4f44f714d8a380fc8ff460f2f
             perror("bind");
             exit(EXIT_FAILURE);
         }
@@ -103,6 +111,7 @@ int main(int argc, char *argv[])
     {
         // pas de client sur le port et le bind a réussi, attend un /HELO
         CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
+<<<<<<< HEAD
                                         (struct sockaddr *)&ss, &len_ss));
 
         // Traitement du message reçu
@@ -113,28 +122,62 @@ int main(int argc, char *argv[])
             printf("%s %s\n", host, serv);
         }
     }
+=======
+                                        (struct sockaddr *)&ss, &len_ss));
+>>>>>>> 620d155a52f83ad4f44f714d8a380fc8ff460f2f
 
-    /* prepare struct pollfd with stdin and socket for incoming data */
-    struct pollfd fds[2];
-    fds[0].fd = STDIN_FILENO;
-    fds[0].events = POLLIN;
-    fds[1].fd = sockfd;
-    fds[1].events = POLLIN;
-
-    char buffer[MAX_SIZE] = {0};
-
-    /* main loop */
-    int run = 1;
-    int taille_buffer = 0;
-
-    while (run)
+    // Traitement du message reçu
+    if (strncmp(recv_buffer, "/HELO", 5) == 0)
     {
-        CHECK(poll(fds, 2, -1));
+        CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,
+                          NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM | NI_NUMERICHOST));
+        printf("%s %s\n", host, serv);
+    }
+}
 
-        if (fds[0].revents & POLLIN)
-        { // dans l'entrée standard
-            // Je récupère les données écrites
-            fgets(buffer, MAX_SIZE, stdin);
+/* prepare struct pollfd with stdin and socket for incoming data */
+struct pollfd fds[2];
+fds[0].fd = STDIN_FILENO;
+fds[0].events = POLLIN;
+fds[1].fd = sockfd;
+fds[1].events = POLLIN;
+
+char buffer[MAX_SIZE] = {0};
+
+/* main loop */
+int run = 1;
+int taille_buffer = 0;
+
+while (run)
+{
+    CHECK(poll(fds, 2, -1));
+
+    if (fds[0].revents & POLLIN)
+    { // dans l'entrée standard
+        // Je récupère les données écrites
+        fgets(buffer, MAX_SIZE, stdin);
+<<<<<<< HEAD
+        if (strncmp(buffer, "/QUIT", 5) == 0)
+        {
+            CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr *)&ss, sizeof ss));
+            run = 0;
+        }
+        else
+        {
+            taille_buffer = strlen(buffer);
+            buffer[taille_buffer - 1] = '\0';
+            CHECK(sendto(sockfd, buffer, taille_buffer, 0, (struct sockaddr *)&ss, sizeof ss));
+        }
+    }
+
+    if (fds[1].revents & POLLIN)
+    {
+        // récupérer data du socket
+        // Recevoir un message et le traiter
+        CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
+                                        (struct sockaddr *)&ss, &len_ss));
+
+=======
             if (strncmp(buffer, "/QUIT", 5) == 0)
             {
                 CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr *)&ss, sizeof ss));
@@ -154,25 +197,30 @@ int main(int argc, char *argv[])
             // Recevoir un message et le traiter
             CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                                             (struct sockaddr *)&ss, &len_ss));
-
-            // Traitement du message reçu
-            if (strncmp(recv_buffer, "/QUIT", 5) == 0)
-            {
-                run = 0;
-            }
-            else
-            {
-                printf("%s\n", recv_buffer);
-            }
+            
+>>>>>>> 620d155a52f83ad4f44f714d8a380fc8ff460f2f
+        // Traitement du message reçu
+        if (strncmp(recv_buffer, "/QUIT", 5) == 0)
+        {
+            run = 0;
         }
+        else
+        {
+            printf("%s\n", recv_buffer);
+        }
+<<<<<<< HEAD
+=======
+            
+>>>>>>> 620d155a52f83ad4f44f714d8a380fc8ff460f2f
     }
+}
 
-    /* close socket */
-    CHECK(close(sockfd));
+/* close socket */
+CHECK(close(sockfd));
 
-    // chechk
-    /* free memory */
-    //   free(src_addr);
+// chechk
+/* free memory */
+//   free(src_addr);
 
-    return 0;
+return 0;
 }
