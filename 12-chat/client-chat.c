@@ -187,18 +187,11 @@ int main(int argc, char *argv[])
 #ifdef BIN
             int i = 0;
             if (recv_buffer[i] == Q)
-            {
                 run = 0;
-                // printf("QUIT binaire\n");
-            }
-
 #else
             // Traitement du message reçu
             if (strncmp(recv_buffer, "/QUIT", 5) == 0)
-            {
-                // printf("Quit normal\n");
                 run = 0;
-            }
 #endif
             else
                 printf("%s\n", recv_buffer);
