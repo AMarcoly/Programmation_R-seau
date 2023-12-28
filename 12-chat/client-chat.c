@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdint.h>
+#include <netinet/in.h>
 
 #define CHECK(op)               \
     do                          \
@@ -29,11 +31,10 @@
 struct messageB
 {
     uint8_t msgB;
-}
-
+};
 #endif
-void
-clean_buffer()
+
+void clean_buffer()
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF)
@@ -65,8 +66,6 @@ int main(int argc, char *argv[])
     char serv[NI_MAXSERV];
 
     ssize_t bytes_received;
-
-    int i = 0;
 
 #ifdef BIN
     struct messageB message;
@@ -118,6 +117,7 @@ int main(int argc, char *argv[])
                                         (struct sockaddr *)&ss, &len_ss));
 #ifdef BIN
         // Traitement du message reçu
+        int i = 0;
         if (recv_buffer[i] == H)
         {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,
@@ -161,7 +161,8 @@ int main(int argc, char *argv[])
                 exit(EXIT_FAILURE);
             }
 #ifdef BIN
-            if (recv_buffer[i] == Q)
+            int i = 0;
+            if (buffer[i] == Q)
             {
                 CHECK(sendto(sockfd, &message, sizeof(message), 0, (struct sockaddr *)&ss,
                              sizeof ss));
@@ -188,7 +189,7 @@ int main(int argc, char *argv[])
             // récupérer data du socket
             // Recevoir un message et le traiter
 #ifdef BIN
-            CHECK(bytes_received = recvfrom(sockfd, , MAX_SIZE, 0,
+            CHECK(bytes_received = recvfrom(sockfd, recv_buffer, MAX_SIZE, 0,
                                             (struct sockaddr *)&ss, &len_ss));
             if (recv_buffer[i] == Q)
             {
