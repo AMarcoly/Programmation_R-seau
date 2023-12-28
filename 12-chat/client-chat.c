@@ -201,9 +201,5 @@ int main(int argc, char *argv[])
     /* close socket */
     CHECK(close(sockfd));
 
-    // chechk
-    /* free memory */
-    //   free(src_addr);
-
     return 0;
 }
