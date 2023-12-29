@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     ssize_t bytes_received;
 
 #ifdef BIN
-    struct messageB messageBinaire; // Prq je mettrai un pointeur?
+    struct messageB messageBinaire;
 #endif
 
     /* set local addr */
@@ -116,10 +116,8 @@ int main(int argc, char *argv[])
 #ifdef BIN
         for (int i = 0; i < bytes_received; i++)
         {
-            // printf("%x", recv_buffer[i]);
             if (recv_buffer[i] == H)
             {
-                // printf("HELO");
                 CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,
                                   NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM | NI_NUMERICHOST));
                 printf("%s %s\n", host, serv);
@@ -131,7 +129,6 @@ int main(int argc, char *argv[])
         {
             CHECK(getnameinfo((struct sockaddr *)&ss, sizeof(ss), host,
                               NI_MAXHOST, serv, NI_MAXSERV, NI_DGRAM | NI_NUMERICHOST));
-            // printf("%s\n", recv_buffer);
             printf("%s %s\n", host, serv);
         }
 #endif
@@ -161,12 +158,13 @@ int main(int argc, char *argv[])
             if (strncmp(buffer, "/QUIT", 5) == 0)
             {
 #ifdef BIN
-                // printf("QUIT\n");
                 messageBinaire.msgB = Q;
-                CHECK(sendto(sockfd, &messageBinaire, sizeof(messageBinaire), 0, (struct sockaddr *)&ss, sizeof ss));
+                CHECK(sendto(sockfd, &messageBinaire, sizeof(messageBinaire), 0,
+                             (struct sockaddr *)&ss, sizeof ss));
                 run = 0;
 #else
-                CHECK(sendto(sockfd, buffer, strlen(buffer), 0, (struct sockaddr *)&ss, sizeof ss));
+                CHECK(sendto(sockfd, buffer, strlen(buffer), 0,
+                             (struct sockaddr *)&ss, sizeof ss));
                 run = 0;
 #endif
             }
@@ -174,7 +172,8 @@ int main(int argc, char *argv[])
             {
                 taille_buffer = strlen(buffer);
                 buffer[taille_buffer - 1] = '\0';
-                CHECK(sendto(sockfd, buffer, taille_buffer, 0, (struct sockaddr *)&ss, sizeof ss));
+                CHECK(sendto(sockfd, buffer, taille_buffer, 0,
+                             (struct sockaddr *)&ss, sizeof ss));
             }
         }
 
